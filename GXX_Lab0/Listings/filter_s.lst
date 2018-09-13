@@ -1,0 +1,45 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             text, CODE, READONLY
+    2 00000000                 export           filter_s
+    3 00000000         filter_s
+    4 00000000         ;this is a comment
+    5 00000000 EE30 0A80       VADD.f32         S0, S1, S0
+    6 00000004 4770            BX               LR
+    7 00000006         
+    8 00000006                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\filter_s.d -o.\objects\filter_s.o -IH:\Desktop\docume
+nts\Courses\Year4\FALL2018\ECSE444\Lab\GXX_Lab0\RTE -IC:\Keil_v5\ARM\PACK\ARM\C
+MSIS\5.3.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM
+4\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 515" 
+--predefine="_RTE_ SETA 1" --predefine="ARMCM4_FP SETA 1" --list=.\listings\fil
+ter_s.lst filter_s.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+filter_s 00000000
+
+Symbol: filter_s
+   Definitions
+      At line 3 in file filter_s.s
+   Uses
+      At line 2 in file filter_s.s
+Comment: filter_s used once
+text 00000000
+
+Symbol: text
+   Definitions
+      At line 1 in file filter_s.s
+   Uses
+      None
+Comment: text unused
+2 symbols
+337 symbols in table
