@@ -220,7 +220,7 @@
 
   <Group>
     <GroupName>asm</GroupName>
-    <tvExp>1</tvExp>
+    <tvExp>0</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
@@ -245,7 +245,7 @@
       <Focus>0</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>.\filter_s.s</PathWithFileName>
+      <PathWithFileName>.\asm\filter_s.s</PathWithFileName>
       <FilenameWithoutPath>filter_s.s</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>

@@ -396,12 +396,12 @@ ARM Macro Assembler    Page 7
 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=.\objects\startup_armcm4.d -o.\objects\startup_armcm4.o -IH:\De
-sktop\documents\Courses\Year4\FALL2018\ECSE444\Lab\GXX_Lab0\RTE -IC:\Keil_v5\AR
-M\PACK\ARM\CMSIS\5.3.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Devi
-ce\ARM\ARMCM4\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSIO
-N SETA 515" --predefine="_RTE_ SETA 1" --predefine="ARMCM4_FP SETA 1" --list=.\
-listings\startup_armcm4.lst RTE\Device\ARMCM4_FP\startup_ARMCM4.s
+erwork --depend=.\objects\startup_armcm4.d -o.\objects\startup_armcm4.o -IP:\EC
+SE444\GXX_Lab0\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include -IC:\Kei
+l_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM4\Include --predefine="__EVAL SET
+A 1" --predefine="__UVISION_VERSION SETA 515" --predefine="_RTE_ SETA 1" --pred
+efine="ARMCM4_FP SETA 1" --list=.\listings\startup_armcm4.lst RTE\Device\ARMCM4
+_FP\startup_ARMCM4.s
 
 
 

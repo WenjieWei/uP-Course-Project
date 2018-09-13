@@ -1,1 +1,1 @@
-.\objects\filter_s.o: filter_s.s
+.\objects\filter_s.o: asm\filter_s.s

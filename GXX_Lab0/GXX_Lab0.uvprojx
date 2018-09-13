@@ -440,7 +440,7 @@
             <File>
               <FileName>filter_s.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\filter_s.s</FilePath>
+              <FilePath>.\asm\filter_s.s</FilePath>
             </File>
           </Files>
         </Group>

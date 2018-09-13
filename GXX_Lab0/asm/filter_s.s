@@ -13,7 +13,21 @@ filter_s
 	MOVS R5, #0x00		; i is the counter of the outer loop. Stored in R5.
 	SUBS R5, R5, #0x04	; Decrement the counter by one for ease of use in the future loops.
 	
+original_sigs
+	; This is the outer loop of the C program
+	; This loop iterates through the original signal array.
+	MOVS R8, #0x00		; R8 holds the temporary sum.
+	MOVS R0, #0x00		; R0 holds the temporary average result.
 	
-	BX LR
+	CMP #0x00, R7		; Check the value of R7.
+	BLE even_filter		; Branch to even if less or equals to 0.
+						; DO WE NEED TO PUSH TO STACK HERE???
+						
+	LSR R9, R4, #1		; R9 = D / 2.
 	
+						
+odd_filter
+	
+finish
+	BX LR	
 	END
