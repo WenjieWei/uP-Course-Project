@@ -11,7 +11,10 @@ filter_s
 	AND R7, R4, #1		; R7 stores if D is odd. 1 for odd, 0 for even.
 	
 	MOVS R5, #0x00		; i is the counter of the outer loop. Stored in R5.
-	CMP R5, 	
+	SUBS R5, R5, #0x04
+
+LOOP1:
+	ADD R5, R5, #0x04	; increment the loop counter
 
 	BX LR
 	
