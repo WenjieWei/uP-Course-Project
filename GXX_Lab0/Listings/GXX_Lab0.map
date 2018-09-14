@@ -658,11 +658,11 @@ Image Symbol Table
     .text                                    0x0000049e   Section        0  sys_wrch.o(.text)
     i.SystemInit                             0x000004ac   Section        0  system_armcm4.o(i.SystemInit)
     i.main                                   0x000004dc   Section        0  main.o(i.main)
-    text                                     0x00000508   Section       86  filter_s.o(text)
+    text                                     0x00000508   Section      104  filter_s.o(text)
     $v0                                      0x00000508   Number         0  filter_s.o(text)
-    x$fpl$fpinit                             0x0000055e   Section       10  fpinit.o(x$fpl$fpinit)
-    $v0                                      0x0000055e   Number         0  fpinit.o(x$fpl$fpinit)
-    .constdata                               0x00000568   Section       24  main.o(.constdata)
+    x$fpl$fpinit                             0x00000570   Section       10  fpinit.o(x$fpl$fpinit)
+    $v0                                      0x00000570   Number         0  fpinit.o(x$fpl$fpinit)
+    .constdata                               0x0000057c   Section       24  main.o(.constdata)
     .data                                    0x20000000   Section        4  system_armcm4.o(.data)
     .bss                                     0x20000004   Section       96  libspace.o(.bss)
     HEAP                                     0x20000068   Section     3072  startup_armcm4.o(HEAP)
@@ -828,11 +828,11 @@ Image Symbol Table
     SystemInit                               0x000004ad   Thumb Code    30  system_armcm4.o(i.SystemInit)
     main                                     0x000004dd   Thumb Code    40  main.o(i.main)
     FILTER_S                                 0x00000509   Thumb Code     0  filter_s.o(text)
-    _fp_init                                 0x0000055f   Thumb Code    10  fpinit.o(x$fpl$fpinit)
-    __fplib_config_fpu_vfp                   0x00000567   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    __fplib_config_pureend_doubles           0x00000567   Thumb Code     0  fpinit.o(x$fpl$fpinit)
-    Region$$Table$$Base                      0x00000580   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x000005a0   Number         0  anon$$obj.o(Region$$Table)
+    _fp_init                                 0x00000571   Thumb Code    10  fpinit.o(x$fpl$fpinit)
+    __fplib_config_fpu_vfp                   0x00000579   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    __fplib_config_pureend_doubles           0x00000579   Thumb Code     0  fpinit.o(x$fpl$fpinit)
+    Region$$Table$$Base                      0x00000594   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x000005b4   Number         0  anon$$obj.o(Region$$Table)
     SystemCoreClock                          0x20000000   Data           4  system_armcm4.o(.data)
     __libspace_start                         0x20000004   Data          96  libspace.o(.bss)
     __temporary_stack_top$libspace           0x20000064   Data           0  libspace.o(.bss)
@@ -845,9 +845,9 @@ Memory Map of the image
 
   Image Entry point : 0x00000169
 
-  Load Region LR_1 (Base: 0x00000000, Size: 0x000005a4, Max: 0xffffffff, ABSOLUTE)
+  Load Region LR_1 (Base: 0x00000000, Size: 0x000005b8, Max: 0xffffffff, ABSOLUTE)
 
-    Execution Region ER_RO (Base: 0x00000000, Size: 0x000005a0, Max: 0xffffffff, ABSOLUTE)
+    Execution Region ER_RO (Base: 0x00000000, Size: 0x000005b4, Max: 0xffffffff, ABSOLUTE)
 
     Base Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -924,10 +924,11 @@ Memory Map of the image
     0x0000049e   0x0000000e   Code   RO          596    .text               c_w.l(sys_wrch.o)
     0x000004ac   0x00000030   Code   RO          159    i.SystemInit        system_armcm4.o
     0x000004dc   0x0000002c   Code   RO            1    i.main              main.o
-    0x00000508   0x00000056   Code   RO           54    text                filter_s.o
-    0x0000055e   0x0000000a   Code   RO          501    x$fpl$fpinit        fz_wm.l(fpinit.o)
-    0x00000568   0x00000018   Data   RO            2    .constdata          main.o
-    0x00000580   0x00000020   Data   RO          641    Region$$Table       anon$$obj.o
+    0x00000508   0x00000068   Code   RO           54    text                filter_s.o
+    0x00000570   0x0000000a   Code   RO          501    x$fpl$fpinit        fz_wm.l(fpinit.o)
+    0x0000057a   0x00000002   PAD
+    0x0000057c   0x00000018   Data   RO            2    .constdata          main.o
+    0x00000594   0x00000020   Data   RO          641    Region$$Table       anon$$obj.o
 
 
     Execution Region ER_RW (Base: 0x20000000, Size: 0x00000004, Max: 0xffffffff, ABSOLUTE)
@@ -955,14 +956,14 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
          0          0          0          0          0         32   add_asm.o
-        86          0          0          0          0        228   filter_s.o
+       104          0          0          0          0        236   filter_s.o
         44          4         24          0          0       1979   main.o
          0          0          0          0          0       3060   retarget_io.o
         64         26        192          0       4096        868   startup_armcm4.o
         48         18          0          4          0        675   system_armcm4.o
 
     ----------------------------------------------------------------------
-       242         48        248          4       4096       6842   Object Totals
+       260         48        248          4       4096       6850   Object Totals
          0          0         32          0          0          0   (incl. Generated)
          0          0          0          0          0          0   (incl. Padding)
 
@@ -1007,8 +1008,8 @@ Image component sizes
         10          0          0          0          0        116   fpinit.o
 
     ----------------------------------------------------------------------
-       950         78          0          0        100       1844   Library Totals
-         6          0          0          0          4          0   (incl. Padding)
+       952         78          0          0        100       1844   Library Totals
+         8          0          0          0          4          0   (incl. Padding)
 
     ----------------------------------------------------------------------
 
@@ -1018,7 +1019,7 @@ Image component sizes
         10          0          0          0          0        116   fz_wm.l
 
     ----------------------------------------------------------------------
-       950         78          0          0        100       1844   Library Totals
+       952         78          0          0        100       1844   Library Totals
 
     ----------------------------------------------------------------------
 
@@ -1027,15 +1028,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-      1192        126        248          4       4196       7802   Grand Totals
-      1192        126        248          4       4196       7802   ELF Image Totals
-      1192        126        248          4          0          0   ROM Totals
+      1212        126        248          4       4196       7810   Grand Totals
+      1212        126        248          4       4196       7810   ELF Image Totals
+      1212        126        248          4          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                 1440 (   1.41kB)
+    Total RO  Size (Code + RO Data)                 1460 (   1.43kB)
     Total RW  Size (RW Data + ZI Data)              4200 (   4.10kB)
-    Total ROM Size (Code + RO Data + RW Data)       1444 (   1.41kB)
+    Total ROM Size (Code + RO Data + RW Data)       1464 (   1.43kB)
 
 ==============================================================================
 

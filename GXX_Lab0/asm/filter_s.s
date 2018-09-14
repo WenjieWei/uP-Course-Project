@@ -7,50 +7,60 @@ FILTER_S
 	; R1 for the location of array FilteredSignal
 	; R2 for the number of N
 	; R3 for the number of D
-	; R4 holds the temporary sum.
-
-	CMP R3, #0
-	BEQ FINISH				; Quit immediately for 0 depth
+	; R4 for the counter i
+	; R5 for the counter j
 	
-	MOV R5, #0			; R5 holds the counter i of the outer loop, which iterates through the original data array
-	SUB R5, #4			; Decrement R5 once, for ease of use in the loop.
+	CMP R3, #0					; if (D = 0).
+	BLE FINISH					; Quit immediately if D <= 0.
+	
+	MOV R4, #0					; R5 holds the counter i of the outer loop.
+	SUBS R4, #4					; Decrement once for easier later application.
 	
 ORI_SIG_LOOP
-	ADD R5, R5, #4		; Increment the counter.
-	CMP R5, R2				
-	BGE FINISH				; Branch to FINISH if (i >= N)
+	ADD R4, R4, #4				; Increment the loop counter.
+	CMP R4, R2					; if (i >= N).
+	BGE FINISH					; Quit the loop and finish.
 	
-	SUB R8, R5, R3, LSR #1	; R8 holds the value of (i - D/2)
-	LDR R7, [R8, #-4]		; R7 holds the counter j of the inner loop.
+	SUBS R6, R4, R3, LSR #1		; R6 holds the value of (i - D / 2).
+	LSL R6, R6, #2				; Multiply R6 by 4 to make it a word size.
+	SUBS R5, R6, #4				; R5 holds the inner loop counter j.
+	ADDS R6, R4, R3, LSR #1		; Now R6 holds the value of (i + D / 2), the upper limit of j.
+	LSL R6, R6, #4
 	
-	AND R12, R3, #1			; Check if D is odd. 1 for odd, 0 for even.	
-	BEQ EVEN_DEPTH			; Branch to EVEN_DEPTH if D is even (R12 == 0)
-	B ODD_DEPTH				; Otherwise branch to ODD_DEPTH
+	MOV R8, #0					; R8 is a temporary random register
+	VMOV.f32 S1, R8				; S1 holds the temporary sum, initialized to 0.
+	VCVT.f32.u32 S1, S1			; Convert to float
+	
+	AND R7, R3, #1				; if (D % 2 == 0)
+	BEQ EVEN_DEPTH				; Branch to even if true
+	B ODD_DEPTH					; Otherwise to odd.
 	
 ODD_DEPTH
-	ADD R7, R7, #4		; Increment the counter
-	ADD R8, R5, R3, LSR #1	; R8 now holds the value of (i + D/2)
-	CMP R7, R8				; If j > (i + D/2)
-	BGT AVERAGE				; Jump out from the inner loop
+	ADDS R5, R5, #4				; Increment the counter
+	CMP R5, R6					
+	BGT AVERAGE					; Branch if (j > i+D/2)
 	
-	CMP R7, #0				; If j < 0
-	BLT ODD_DEPTH			; Do not change the sum
-	SUB R10, R2, #1			; R10 = N - 1
-	CMP R7, R10				; If j > (N-1)
-	BLT ODD_DEPTH			; Do not change the sum
-	
-	;ADD R4, R4, R0			; sum += original signal
-	;ADD R0, R0, #4			; Now R0 points to the next number in the original signal array.
-	VMOV S0, #0x00			; Use S0 to hold temp sum.
-	VLDR S1, [R0]			; Load the first float value into S1
-	VADD S0, S0, S1			; sum += original signal
-	B ODD_DEPTH
+	CMP R5, #0
+	BLT ODD_DEPTH				; Return to beginning of the loop and do nothing if j<0 (Out of bounds)
+	CMP R5, R2			
+	BGE ODD_DEPTH				; Return to beginning of the loop and do nothing if j >= N (Out of bounds)
+	B AVERAGE					; Otherwise branch to AVERAGE and perform calculations for an average.
 	
 EVEN_DEPTH
-
+	
 AVERAGE
-	; Division
+	VMOV.f32 S3, R3				; S3 holds the value of D.
+	VCVT.f32.u32 S3, S3			; Convert the value held by S3 to float
+	
+	VLDR.f32 S2, [R0]			; S2 holds the value of the current original signal
 
+	VADD.F32 S1, S1, S2			; Update the sum
+	VDIV.F32 S0, S1, S3			; Calculation for average
+	ADDS R0, R0, #4				; R0 points to the next number in the array
+	VSTR.F32 S0, [R1]			; Store the average result to array filtered
+	ADDS R1, R1, #4				; R1 points to the next number in the array.
+	B ORI_SIG_LOOP
+	
 FINISH
 	BX LR	
 	END
