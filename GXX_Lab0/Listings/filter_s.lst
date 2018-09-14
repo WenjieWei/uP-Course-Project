@@ -10,15 +10,15 @@ ARM Macro Assembler    Page 1
     4 00000000         ; This is the subroutine for calculating the filtered va
                        lue.
     5 00000000         ; There are four input arguments:
-    6 00000000         ; R1 for the location of array OriginalSignal
-    7 00000000         ; R2 for the location of array FilteredSignal
-    8 00000000         ; R3 for the number of N
-    9 00000000         ; R4 for the number of D
-   10 00000000         ; R0 holds the return value, in this case, the average r
-                       esult
+    6 00000000         ; R0 for the location of array OriginalSignal
+    7 00000000         ; R1 for the location of array FilteredSignal
+    8 00000000         ; R2 for the number of N
+    9 00000000         ; R3 for the number of D
+   10 00000000         ; R0 holds the return value later, in this case, the ave
+                       rage result
    11 00000000         ; R5 holds the temporary sum.
    12 00000000         ; R6 - R12 are general purpose reg. All used later.
-   13 00000000 2C00            CMP              R4, #0
+   13 00000000 2B00            CMP              R3, #0
    14 00000002 D027            BEQ              FINISH      ; Quit immediately 
                                                             for 0 depth
    15 00000004         
@@ -37,21 +37,21 @@ ARM Macro Assembler    Page 1
    20 00000010         ORI_SIG_LOOP
    21 00000010 F106 0604       ADD              R6, R6, #4  ; Increment the cou
                                                             nter.
-   22 00000014 429E            CMP              R6, R3
+   22 00000014 4296            CMP              R6, R2
    23 00000016 DA1D            BGE              FINISH      ; Branch to FINISH 
                                                             if (i >= N)
    24 00000018         
-   25 00000018 EBA6 0854       SUB              R8, R6, R4, LSR #1 ; R8 holds t
+   25 00000018 EBA6 0853       SUB              R8, R6, R3, LSR #1 ; R8 holds t
                                                             he value of (i - D/
                                                             2)
-   26 0000001C EB06 0954       ADD              R9, R6, R4, LSR #1 ; R9 holds t
+   26 0000001C EB06 0953       ADD              R9, R6, R3, LSR #1 ; R9 holds t
                                                             he value of (i + D/
                                                             2)
    27 00000020 F858 7C04       LDR              R7, [R8, #-4] ; R7 holds the co
                                                             unter j of the inne
                                                             r loop.
    28 00000024         
-   29 00000024 F004 0C01       AND              R12, R4, #1 ; Check if D is odd
+   29 00000024 F003 0C01       AND              R12, R3, #1 ; Check if D is odd
                                                             . 1 for odd, 0 for 
                                                             even. 
    30 00000028 D00E            BEQ              EVEN_DEPTH  ; Branch to EVEN_DE
@@ -76,14 +76,14 @@ ARM Macro Assembler    Page 2
    38 00000034 2F00            CMP              R7, #0      ; If j < 0
    39 00000036 DBF9            BLT              ODD_DEPTH   ; Do not change the
                                                              sum
-   40 00000038 F1A3 0A01       SUB              R10, R3, #1 ; R10 = N - 1
+   40 00000038 F1A2 0A01       SUB              R10, R2, #1 ; R10 = N - 1
    41 0000003C 4557            CMP              R7, R10     ; If j > (N-1)
    42 0000003E DBF5            BLT              ODD_DEPTH   ; Do not change the
                                                              sum
    43 00000040         
-   44 00000040 440D            ADD              R5, R5, R1  ; sum += original s
+   44 00000040 4405            ADD              R5, R5, R0  ; sum += original s
                                                             ignal
-   45 00000042 F101 0104       ADD              R1, R1, #4  ; Now R1 points to 
+   45 00000042 F100 0004       ADD              R0, R0, #4  ; Now R1 points to 
                                                             the next number in 
                                                             the original signal
                                                              array.
