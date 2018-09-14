@@ -15,7 +15,7 @@ FILTER_S
 	
 	MOV R6, #0				; R6 holds the counter i of the outer loop, which iterates through the original data array
 	MOV R5, #0				; R5 holds the temporary sum. Initialize it to 0.
-	SUB R6, #-4				; Decrement R6 once, for ease of use in the loop.
+	SUB R6, #4				; Decrement R6 once, for ease of use in the loop.
 	
 ORI_SIG_LOOP
 	ADD R6, R6, #4			; Increment the counter.
