@@ -1,2 +1,5 @@
 # ECSE444
-This repository contains the C and Assembly code used for course ECSE444: Microprocessors Fall 2018 course at McGill University.
+This is the lab repo.
+Project files *might* be able to be shared to another computer such that the project builds correctly.
+
+Authors: Xu Hai & Wenjie Wei
