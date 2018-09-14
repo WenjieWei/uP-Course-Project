@@ -7,23 +7,20 @@ FILTER_S
 	; R1 for the location of array FilteredSignal
 	; R2 for the number of N
 	; R3 for the number of D
-	; R0 holds the return value later, in this case, the average result
-	; R5 holds the temporary sum.
-	; R6 - R12 are general purpose reg. All used later.
+	; R4 holds the temporary sum.
+
 	CMP R3, #0
 	BEQ FINISH				; Quit immediately for 0 depth
 	
-	MOV R6, #0				; R6 holds the counter i of the outer loop, which iterates through the original data array
-	MOV R5, #0				; R5 holds the temporary sum. Initialize it to 0.
-	SUB R6, #4				; Decrement R6 once, for ease of use in the loop.
+	MOV R5, #0			; R5 holds the counter i of the outer loop, which iterates through the original data array
+	SUB R5, #4			; Decrement R5 once, for ease of use in the loop.
 	
 ORI_SIG_LOOP
-	ADD R6, R6, #4			; Increment the counter.
-	CMP R6, R2				
+	ADD R5, R5, #4		; Increment the counter.
+	CMP R5, R2				
 	BGE FINISH				; Branch to FINISH if (i >= N)
 	
-	SUB R8, R6, R3, LSR #1	; R8 holds the value of (i - D/2)
-	ADD R9, R6, R3, LSR #1	; R9 holds the value of (i + D/2)
+	SUB R8, R5, R3, LSR #1	; R8 holds the value of (i - D/2)
 	LDR R7, [R8, #-4]		; R7 holds the counter j of the inner loop.
 	
 	AND R12, R3, #1			; Check if D is odd. 1 for odd, 0 for even.	
@@ -31,8 +28,9 @@ ORI_SIG_LOOP
 	B ODD_DEPTH				; Otherwise branch to ODD_DEPTH
 	
 ODD_DEPTH
-	ADD R7, R7, #4			; Increment the counter
-	CMP R7, R9				; If j > (i + D/2)
+	ADD R7, R7, #4		; Increment the counter
+	ADD R8, R5, R3, LSR #1	; R8 now holds the value of (i + D/2)
+	CMP R7, R8				; If j > (i + D/2)
 	BGT AVERAGE				; Jump out from the inner loop
 	
 	CMP R7, #0				; If j < 0
@@ -41,17 +39,17 @@ ODD_DEPTH
 	CMP R7, R10				; If j > (N-1)
 	BLT ODD_DEPTH			; Do not change the sum
 	
-	ADD R5, R5, R0			; sum += original signal
-	ADD R0, R0, #4			; Now R1 points to the next number in the original signal array.
+	;ADD R4, R4, R0			; sum += original signal
+	;ADD R0, R0, #4			; Now R0 points to the next number in the original signal array.
+	VMOV S0, #0x00			; Use S0 to hold temp sum.
+	VLDR S1, [R0]			; Load the first float value into S1
+	VADD S0, S0, S1			; sum += original signal
 	B ODD_DEPTH
 	
 EVEN_DEPTH
 
 AVERAGE
-	SDIV R0, R5, R4			; average = sum / D
-	LDR R2, [R0]			; Load the average into corresponding index in filtered array.
-	ADD R2, R2, #4			; Now R2 points to the next element in Filtered array.
-	B ORI_SIG_LOOP
+	; Division
 
 FINISH
 	BX LR	
