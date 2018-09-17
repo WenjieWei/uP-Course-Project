@@ -13,7 +13,7 @@ STAR
 AVERAGE
   SUBS R4, R4, #1
   BLT VARIANCE_PRE
-  VADD.f32 S4, S4, S0
+  VADD.f32 S4, S4, S0               ; If there are anything wrong, just try VLDR.f32 S4, S4, =0 first
   VLDR.f32 S0, R0, R4, LSL #2
   B AVERAGE
 

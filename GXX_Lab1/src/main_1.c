@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <arm_math.h>
 
 
 float f10_array_a[10] = {48.21, 79.48, 24.27, 28.82, 78.24, 88.49, 31.19, 5.52, 82.70, 77.73};
