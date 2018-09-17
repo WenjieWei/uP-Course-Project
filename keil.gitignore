@@ -8,6 +8,8 @@
 *.uvgui
 *.uvgui.*
 *.uvguix.*
+*.uvguix.wwei18*
+*.uvguix.wenji*
 
 # Listing files
 *.cod
