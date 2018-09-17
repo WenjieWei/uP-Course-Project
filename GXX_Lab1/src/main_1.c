@@ -21,7 +21,7 @@ int main(){
   arm_dot_prod_f32(f10_array_a, f10_array_b, 10, &dot_pro_dsp);
 
   /* Assemble dot production */
-  //asm_dot();
+  asm_dot_pro(f10_array_a, f10_array_b, 10, &dot_pro_a);
 
   /* C variance */
   variance(f10_array_a, 10, variance_c);
@@ -30,7 +30,7 @@ int main(){
   arm_var_f32(f10_array_a, 10, &variance_dsp);
 
   /* Assemble variance */
-  //asm_variance();
+  asm_variance(f10_array_a, 10, &variance_a);
 
   printf("Pure C   : Dot production = %f\n", dot_pro_c);
 	printf("Assembly : Dot production = %f\n", dot_pro_a);
