@@ -13,11 +13,12 @@ ARM Macro Assembler    Page 1
     7 00000006         
     8 00000006                 END
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=.\objects\add_asm.d -o.\objects\add_asm.o -IP:\ECSE444\GXX_Lab0
-\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\
-ARM\CMSIS\5.3.0\Device\ARM\ARMCM4\Include --predefine="__EVAL SETA 1" --predefi
-ne="__UVISION_VERSION SETA 515" --predefine="_RTE_ SETA 1" --predefine="ARMCM4_
-FP SETA 1" --list=.\listings\add_asm.lst asm\add_asm.s
+erwork --depend=.\objects\add_asm.d -o.\objects\add_asm.o -I.\RTE\_GXX_Lab0 -ID
+:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include -ID:\Keil\ARM\PACK\ARM\CMSIS
+\5.4.0\CMSIS\DSP\Include -ID:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM4\I
+nclude --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 526" --p
+redefine="_RTE_ SETA 1" --predefine="ARMCM4_FP SETA 1" --list=.\listings\add_as
+m.lst asm\add_asm.s
 
 
 
