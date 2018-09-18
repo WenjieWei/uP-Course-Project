@@ -15,8 +15,7 @@ void variance(float *arr, int size, float *result){
 	float ave = average(arr, size);
 	float sum = 0;
 	for (i = 0; i < size; i++){
-		sum = sum + pow((arr[i] - ave), 2);
-	}
-	
-	*result = sum/size;
+		sum = sum + powf((arr[i] - ave), 2);
+	};
+	*result = sum / (float) (size - 1);
 }

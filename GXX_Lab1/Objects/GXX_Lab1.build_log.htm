@@ -27,7 +27,20 @@ Project File Date:  09/17/2018
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil\ARM\ARMCC\Bin'
 Build target 'GXX_Lab1'
-".\Objects\GXX_Lab1.axf" - 0 Error(s), 0 Warning(s).
+assembling asm_dot_product.s...
+asm\asm_dot_product.s(13): error: A1114E: Expected register relative expression
+asm\asm_dot_product.s(14): error: A1114E: Expected register relative expression
+compiling main.c...
+./inc/Dot_Production.h(7): warning:  #1-D: last line of file ends without a newline
+  #endif
+./inc/variance.h(6): warning:  #1-D: last line of file ends without a newline
+  #endif
+src\main.c(46): warning:  #1-D: last line of file ends without a newline
+  }
+src\main.c(18): warning:  #177-D: variable "variance_a"  was declared but never referenced
+  	float variance_c, variance_dsp, variance_a, dot_pro_c, dot_pro_dsp, dot_pro_a;
+src\main.c: 4 warnings, 0 errors
+".\Objects\GXX_Lab1.axf" - 2 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -65,6 +78,7 @@ Package Vendor: Keil
 
    * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:ITM:1.2.0
       Source file:   Source\retarget_io.c
+Target not created.
 Build Time Elapsed:  00:00:00
 </pre>
 </body>

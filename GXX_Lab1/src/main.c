@@ -17,13 +17,14 @@ int main(){
 
 	float variance_c, variance_dsp, variance_a, dot_pro_c, dot_pro_dsp, dot_pro_a;
 
-	/* C dot production */Dot_Production(f10_array_a, f10_array_b, 10, &dot_pro_c);
+	/* C dot production */
+	Dot_Production(f10_array_a, f10_array_b, 10, &dot_pro_c);
 
 	/* CMSIS-DSP dot production function */
 	arm_dot_prod_f32(f10_array_a, f10_array_b, 10, &dot_pro_dsp);
 
 	/* Assemble dot production */
-	//asm_dot_pro(f10_array_a, f10_array_b, 10, &dot_pro_a);
+	asm_dot_product(f10_array_a, f10_array_b, 10, &dot_pro_a);
 
 	/* C variance */
 	variance(f10_array_a, 10, &variance_c);
