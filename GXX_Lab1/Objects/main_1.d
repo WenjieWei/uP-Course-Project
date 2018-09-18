@@ -1,0 +1,12 @@
+.\objects\main_1.o: src\main_1.c
+.\objects\main_1.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\main_1.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\DSP\Include\arm_math.h
+.\objects\main_1.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h
+.\objects\main_1.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\main_1.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_version.h
+.\objects\main_1.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_compiler.h
+.\objects\main_1.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h
+.\objects\main_1.o: D:\Keil\ARM\ARMCC\Bin\..\include\string.h
+.\objects\main_1.o: D:\Keil\ARM\ARMCC\Bin\..\include\math.h
+.\objects\main_1.o: ./inc/Dot_Production.h
+.\objects\main_1.o: ./inc/variance.h

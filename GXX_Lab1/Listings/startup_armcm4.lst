@@ -396,12 +396,12 @@ ARM Macro Assembler    Page 7
 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
-erwork --depend=.\objects\startup_armcm4.d -o.\objects\startup_armcm4.o -IC:\Us
-ers\hauror\ECSE444\GXX_Lab1\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Inc
-lude -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM4\Include --predefin
-e="__EVAL SETA 1" --predefine="__UVISION_VERSION SETA 515" --predefine="_RTE_ S
-ETA 1" --predefine="ARMCM4_FP SETA 1" --list=.\listings\startup_armcm4.lst RTE\
-Device\ARMCM4_FP\startup_ARMCM4.s
+erwork --depend=.\objects\startup_armcm4.d -o.\objects\startup_armcm4.o -I.\RTE
+\_GXX_Lab1 -ID:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include -ID:\Keil\ARM\
+PACK\ARM\CMSIS\5.4.0\CMSIS\DSP\Include -ID:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\Devic
+e\ARM\ARMCM4\Include --predefine="__EVAL SETA 1" --predefine="__UVISION_VERSION
+ SETA 526" --predefine="_RTE_ SETA 1" --predefine="ARMCM4_FP SETA 1" --list=.\l
+istings\startup_armcm4.lst RTE\Device\ARMCM4_FP\startup_ARMCM4.s
 
 
 

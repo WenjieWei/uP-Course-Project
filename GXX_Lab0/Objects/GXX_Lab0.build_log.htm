@@ -3,70 +3,90 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Tool Versions:</h2>
-IDE-Version: µVision V5.15
-Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
-License Information: ECE MCGILL, MCGILL UNI, LIC=----
+IDE-Version: µVision V5.26.2.0
+Copyright (C) 2018 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Wenjie Wei, McGill University, LIC=----
  
 Tool Versions:
-Toolchain:       MDK-Lite  Version: 5.15.0
-Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.05 update 2 (build 169)
-Assembler:       Armasm.exe V5.05 update 2 (build 169)
-Linker/Locator:  ArmLink.exe V5.05 update 2 (build 169)
-Library Manager: ArmAr.exe V5.05 update 2 (build 169)
-Hex Converter:   FromElf.exe V5.05 update 2 (build 169)
-CPU DLL:         SARMCM3.DLL V5.15.0
-Dialog DLL:      DCM.DLL V1.13.2.0
-Target DLL:      UL2CM3.DLL V1.155.8.0
-Dialog DLL:      TCM.DLL V1.14.5.0
+Toolchain:       MDK-Lite  Version: 5.26.2.0
+Toolchain Path:  D:\Keil\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.26.2.0
+Dialog DLL:      DCM.DLL V1.17.2.0
+Target DLL:      UL2CM3.DLL V1.161.6.0
+Dialog DLL:      TCM.DLL V1.36.1.0
  
 <h2>Project:</h2>
-P:\ECSE444\GXX_Lab0\GXX_Lab0.uvprojx
-Project File Date:  09/13/2018
+E:\Documents\Courses\4th Year\FALL 2018\ECSE 444\ecse444\GXX_Lab0\GXX_Lab0.uvprojx
+Project File Date:  09/16/2018
 
 <h2>Output:</h2>
-*** Using Compiler 'V5.05 update 2 (build 169)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'D:\Keil\ARM\ARMCC\Bin'
 Build target 'GXX_Lab0'
 assembling filter_s.s...
+compiling add_c.c...
+src\add_c.c(6): warning:  #1-D: last line of file ends without a newline
+  }
+src\add_c.c: 1 warning, 0 errors
+compiling filter.c...
+src\filter.c(57): warning:  #1-D: last line of file ends without a newline
+  }
+src\filter.c: 1 warning, 0 errors
+compiling retarget_io.c...
+assembling startup_ARMCM4.s...
+assembling add_asm.s...
+compiling main.c...
+.\inc\filter.h(7): warning:  #1-D: last line of file ends without a newline
+  #endif
+src\main.c(14): warning:  #1-D: last line of file ends without a newline
+  }
+src\main.c: 2 warnings, 0 errors
+compiling system_ARMCM4.c...
 linking...
-Program Size: Code=1212 RO-data=248 RW-data=4 ZI-data=4196  
-".\Objects\GXX_Lab0.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=8340 RO-data=448 RW-data=16 ZI-data=4448  
+".\Objects\GXX_Lab0.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
 Package Vendor: ARM
-                http://www.keil.com/pack/ARM.CMSIS.5.3.0.pack
-                ARM::Device:Startup:1.0.1
+                http://www.keil.com/pack/ARM.CMSIS.5.4.0.pack
+                ARM.CMSIS.5.4.0
                 CMSIS (Cortex Microcontroller Software Interface Standard)
-   * Component: Startup Version: 1.0.1
-   * Component: CORE Version: 5.1.1
+   * Component: CORE Version: 5.1.2
    * Component: DSP Version: 1.5.2
+   * Component: Startup Version: 1.0.1
 
 Package Vendor: Keil
-                http://www.keil.com/pack/Keil.ARM_Compiler.1.4.0.pack
-                Keil.ARM Compiler::Compiler:I/O:STDOUT:ITM:1.4.0
+                http://www.keil.com/pack/Keil.ARM_Compiler.1.6.0.pack
+                Keil.ARM_Compiler.1.6.0
                 Keil ARM Compiler extensions for ARM Compiler 5 and ARM Compiler 6
-   * Component: STDOUT Variant: ITM Version: 1.4.0
+   * Component: STDOUT Variant: ITM Version: 1.2.0
 
 <h2>Collection of Component include folders:</h2>
-  P:\ECSE444\GXX_Lab0\RTE
-  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include
-  C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM4\Include
+  .\RTE\_GXX_Lab0
+  D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include
+  D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\DSP\Include
+  D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM4\Include
 
 <h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.1.2
+
+   * Component: ARM::CMSIS:DSP:1.5.2
+      Include file:  CMSIS\DSP\Include\arm_math.h
+      Library file:  CMSIS\Lib\ARM\arm_cortexM4lf_math.lib
 
    * Component: ARM::Device:Startup:1.0.1
       Source file:   Device\ARM\ARMCM4\Source\system_ARMCM4.c
       Source file:   Device\ARM\ARMCM4\Source\ARM\startup_ARMCM4.s
 
-   * Component: ARM::CMSIS:CORE:5.1.1
-
-   * Component: ARM::CMSIS:DSP:1.5.2
-      Library file:  CMSIS\Lib\ARM\arm_cortexM4lf_math.lib
-      Include file:  CMSIS\Include\arm_math.h
-
-   * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:ITM:1.4.0
+   * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:ITM:1.2.0
       Source file:   Source\retarget_io.c
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
