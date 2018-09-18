@@ -7,7 +7,7 @@ int main(){
 	float *filtered;
 	filtered = malloc(6 * sizeof(float));
 	
-	//filter(signal, filtered, 6, 4);
+	filter(signal, filtered, 6, 4);
 	FILTER_S(signal, filtered, 6, 3);
 	
 	return 0;
