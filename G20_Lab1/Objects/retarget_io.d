@@ -1,3 +1,4 @@
+<<<<<<< HEAD:G20_Lab1/Objects/retarget_io.d
 .\objects\retarget_io.o: D:\Keil\ARM\PACK\Keil\ARM_Compiler\1.6.0\Source\retarget_io.c
 .\objects\retarget_io.o: D:\Keil\ARM\ARMCC\Bin\..\include\string.h
 .\objects\retarget_io.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
@@ -6,3 +7,13 @@
 .\objects\retarget_io.o: D:\Keil\ARM\ARMCC\Bin\..\include\assert.h
 .\objects\retarget_io.o: D:\Keil\ARM\ARMCC\Bin\..\include\rt_sys.h
 .\objects\retarget_io.o: .\RTE\_GXX_Lab1\RTE_Components.h
+=======
+.\objects\retarget_io.o: C:\Keil_v5\ARM\PACK\Keil\ARM_Compiler\1.4.0\Source\retarget_io.c
+.\objects\retarget_io.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\retarget_io.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\retarget_io.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+.\objects\retarget_io.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\retarget_io.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\assert.h
+.\objects\retarget_io.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\rt_sys.h
+.\objects\retarget_io.o: P:\ECSE444\GXX_Lab1\RTE\RTE_Components.h
+>>>>>>> 8dc26f5c929b3f252ac9cf31c2c6e3adf89bfb89:GXX_Lab1/Objects/retarget_io.d

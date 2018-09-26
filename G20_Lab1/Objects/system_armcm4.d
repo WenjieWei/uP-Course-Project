@@ -1,3 +1,4 @@
+<<<<<<< HEAD:G20_Lab1/Objects/system_armcm4.d
 .\objects\system_armcm4.o: RTE\Device\ARMCM4_FP\system_ARMCM4.c
 .\objects\system_armcm4.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM4\Include\ARMCM4_FP.h
 .\objects\system_armcm4.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\core_cm4.h
@@ -7,3 +8,14 @@
 .\objects\system_armcm4.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\cmsis_armcc.h
 .\objects\system_armcm4.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\CMSIS\Core\Include\mpu_armv7.h
 .\objects\system_armcm4.o: D:\Keil\ARM\PACK\ARM\CMSIS\5.4.0\Device\ARM\ARMCM4\Include\system_ARMCM4.h
+=======
+.\objects\system_armcm4.o: RTE\Device\ARMCM4_FP\system_ARMCM4.c
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM4\Include\ARMCM4_FP.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\core_cm4.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\cmsis_version.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\cmsis_compiler.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\cmsis_armcc.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\CMSIS\Include\mpu_armv7.h
+.\objects\system_armcm4.o: C:\Keil_v5\ARM\PACK\ARM\CMSIS\5.3.0\Device\ARM\ARMCM4\Include\system_ARMCM4.h
+>>>>>>> 8dc26f5c929b3f252ac9cf31c2c6e3adf89bfb89:GXX_Lab1/Objects/system_armcm4.d
