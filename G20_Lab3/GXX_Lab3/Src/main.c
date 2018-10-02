@@ -1,5 +1,7 @@
 #include "main.h"
 #include "stm32l4xx_hal.h"
+#define TS_CAL1					(uint16_t*) 0x1FFF75A8
+#define TS_CAL2					(uint16_t*) 0x1FFF75CA
 
 ADC_HandleTypeDef hadc1;
 UART_HandleTypeDef huart1;
@@ -17,24 +19,49 @@ int main(void)
 {
 	char ch[1] = {'Y'};
 	char buf[1];
+	char msg[16] = {'T', 'e', 'm', 'p', 'e', 'r', 'a', 't', 'u', 'r', 'e', '=', ' ', ' ', 'C', '\n'};
+	uint16_t sensorValue;
+	uint16_t actualTemp;
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-  /* Configure the system clock */
-  SystemClock_Config();
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  MX_USART1_UART_Init();
-
-  /* Infinite loop */
-  while (1)
-  {
+	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+	HAL_Init();
+	HAL_ADC_Init(&hadc1);
+	/* Configure the system clock */
+	SystemClock_Config();
+	/* Initialize all configured peripherals */
+	MX_GPIO_Init();
+	MX_USART1_UART_Init();	
+	
+	HAL_ADC_Start(&hadc1);
+  
+	/* Infinite loop */
+	while (1)
+	{
+		/* Prints Y whenever X is received */
+		/*
 		HAL_UART_Receive(&huart1, (uint8_t *)&buf[0], 1, 30000);
 		HAL_Delay(100);
 		if(buf[0] == 'X'){
 			HAL_UART_Transmit(&huart1, (uint8_t *)&ch[0], 1, 30000);
 		} 
-  }
+		*/
+				
+		/*if(HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK){
+			sensorValue = (uint8_t) HAL_ADC_GetValue(&hadc1);
+			actualTemp = (110 - 30) / (*TS_CAL2 - *TS_CAL1) * (sensorValue - *TS_CAL1) + 30;
+		}*/
+		
+		HAL_ADC_PollForConversion(&hadc1, 1);
+		sensorValue = (uint16_t) HAL_ADC_GetValue(&hadc1);
+		actualTemp = (110 - 30) / (*TS_CAL2 - *TS_CAL1) * (sensorValue - *TS_CAL1) + 30;
+		
+		
+		msg[12] = (actualTemp / 10) + 48;
+		msg[13] = (actualTemp % 10) + 48;
+		
+		HAL_UART_Transmit(&huart1, (uint8_t *)&msg[0], 16, 1);
+		HAL_Delay(100);		
+	}
 }
 
 void SystemClock_Config(void)
