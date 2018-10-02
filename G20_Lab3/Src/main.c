@@ -10,30 +10,34 @@ DMA_HandleTypeDef hdma_usart1_tx;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_ADC1_Init(void);
+int UART_Print_String(UART_HandleTypeDef *huart1, char *arr, int size);
 
-int UART_Print_String(UART_HandleTypeDef *huart1, char *arr, int size){
-	return 0;
-}
+/* GLOBAL VARIABLE FOR THE SOFTWARE FLAG */
+int softFlag = 0;
+int result;
+uint16_t sensorValue;	
+uint16_t actualTemp;
+
 
 int main(void)
-{
+{	
 	char ch[1] = {'Y'};
 	char buf[1];
-	char msg[16] = {'T', 'e', 'm', 'p', 'e', 'r', 'a', 't', 'u', 'r', 'e', '=', ' ', ' ', 'C', '\n'};
-	uint16_t sensorValue;
-	uint16_t actualTemp;
+	char msg[18] = {'T', 'e', 'm', 'p', 'e', 'r', 'a', 't', 'u', 'r', 'e', ' ', '=', ' ', ' ', ' ', 'C', '\n'};
+
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
-	HAL_ADC_Init(&hadc1);
 	/* Configure the system clock */
 	SystemClock_Config();
+	
+	//HAL_ADC_DeInit(&hadc1);
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
-	MX_USART1_UART_Init();	
+	MX_ADC1_Init();
+	MX_USART1_UART_Init();
 	
-	HAL_ADC_Start(&hadc1);
-  
 	/* Infinite loop */
 	while (1)
 	{
@@ -51,16 +55,32 @@ int main(void)
 			actualTemp = (110 - 30) / (*TS_CAL2 - *TS_CAL1) * (sensorValue - *TS_CAL1) + 30;
 		}*/
 		
-		HAL_ADC_PollForConversion(&hadc1, 1);
-		sensorValue = (uint16_t) HAL_ADC_GetValue(&hadc1);
-		actualTemp = (110 - 30) / (*TS_CAL2 - *TS_CAL1) * (sensorValue - *TS_CAL1) + 30;
+		/*
+		HAL_ADC_Start(&hadc1);
+		if(HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK){
+			sensorValue = (uint16_t) HAL_ADC_GetValue(&hadc1);
+			result = __LL_ADC_CALC_TEMPERATURE(3300, sensorValue, LL_ADC_RESOLUTION_8B);
+		}
 		
+		msg[14] = (result / 10) + 48;
+		msg[15] = (result % 10) + 48;
 		
-		msg[12] = (actualTemp / 10) + 48;
-		msg[13] = (actualTemp % 10) + 48;
-		
-		HAL_UART_Transmit(&huart1, (uint8_t *)&msg[0], 16, 1);
-		HAL_Delay(100);		
+		UART_Print_String(&huart1, msg, 18);
+		HAL_Delay(100);
+		*/
+		if(softFlag){							// check interrupt
+			HAL_ADC_Start(&hadc1);				// Start ADC for reading the temperature
+			if(HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK){
+				sensorValue = (uint16_t) HAL_ADC_GetValue(&hadc1);					// Keeps polling for the reading of the sensor readings
+				result = __LL_ADC_CALC_TEMPERATURE(3300, sensorValue, LL_ADC_RESOLUTION_8B);
+			}
+			
+			msg[14] = (result / 10) + 48;		// write the first digit to the string
+			msg[15] = (result % 10) + 48;		// write the secon digit to the string
+			
+			UART_Print_String(&huart1, msg, 18);
+			softFlag = 0;						// reset the interrupt flag
+		}
 	}
 }
 
@@ -127,7 +147,7 @@ void SystemClock_Config(void)
 
     /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/10);
 
     /**Configure the Systick 
     */
@@ -157,6 +177,49 @@ static void MX_USART1_UART_Init(void)
 
 }
 
+
+static void MX_ADC1_Init(void)
+{
+	ADC_ChannelConfTypeDef sConfig;
+	
+	__HAL_RCC_ADC_CLK_ENABLE();
+	
+	hadc1.Instance = ADC1;
+	//STATUS = HAL_ERROR @ LINE 533 OF STM32L4XX_HAL_ADC.C
+	
+	hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+	// According to the requirement, we should use 8 bit here
+	hadc1.Init.Resolution = ADC_RESOLUTION_8B;
+	hadc1.Init.ScanConvMode = DISABLE;
+	hadc1.Init.ContinuousConvMode = DISABLE;
+	hadc1.Init.DiscontinuousConvMode = DISABLE;
+	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+	hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+	hadc1.Init.NbrOfConversion = 1;
+	hadc1.Init.DMAContinuousRequests = DISABLE;
+	hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+	
+	// Error check
+	if(HAL_ADC_Init(&hadc1) != HAL_OK){
+		_Error_Handler(__FILE__, __LINE__);
+	}
+  
+	sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;
+	sConfig.Rank = 1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
+	sConfig.Offset = 0;
+	
+	// Error check
+	if(HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK){
+		_Error_Handler(__FILE__, __LINE__);
+	}
+}
+
+int UART_Print_String(UART_HandleTypeDef *huart1, char *arr, int size){
+	HAL_UART_Transmit(huart1, (uint8_t *)&arr[0], size, 100);
+	return 0;
+}
 static void MX_GPIO_Init(void)
 {
   __HAL_RCC_GPIOB_CLK_ENABLE();
