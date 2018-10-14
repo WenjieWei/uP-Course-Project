@@ -11,6 +11,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_UART_DMA_Init(void);
+static void MX_DMA_Init(void);
 int UART_Print_String(UART_HandleTypeDef *huart1, char *arr, int size);
 
 /* GLOBAL VARIABLE FOR THE SOFTWARE FLAG */
@@ -19,6 +21,9 @@ int result;
 uint16_t sensorValue;	
 uint16_t actualTemp;
 
+/* GLOBAL VARIABLE TO STORE THE TEMPERATURE READING FOR DMA */
+char temp_reading[30];
+int temp_counter = 0;
 
 int main(void)
 {	
@@ -31,12 +36,12 @@ int main(void)
 	HAL_Init();
 	/* Configure the system clock */
 	SystemClock_Config();
-	
 	//HAL_ADC_DeInit(&hadc1);
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_ADC1_Init();
 	MX_USART1_UART_Init();
+	MX_DMA_Init();
 	
 	/* Infinite loop */
 	while (1)
@@ -68,17 +73,34 @@ int main(void)
 		UART_Print_String(&huart1, msg, 18);
 		HAL_Delay(100);
 		*/
+		
+		
 		if(softFlag){							// check interrupt
 			HAL_ADC_Start(&hadc1);				// Start ADC for reading the temperature
+			//HAL_DMA_Start(&hdma_usart1_tx);
 			if(HAL_ADC_PollForConversion(&hadc1, 100) == HAL_OK){
 				sensorValue = (uint16_t) HAL_ADC_GetValue(&hadc1);					// Keeps polling for the reading of the sensor readings
 				result = __LL_ADC_CALC_TEMPERATURE(3300, sensorValue, LL_ADC_RESOLUTION_8B);
 			}
+			// Transmits through UART immediately 
 			
 			msg[14] = (result / 10) + 48;		// write the first digit to the string
 			msg[15] = (result % 10) + 48;		// write the secon digit to the string
 			
-			UART_Print_String(&huart1, msg, 18);
+			
+			//Update the memory first and access using DMA afterwards	
+			
+			//temp_reading[temp_counter] = (result / 10) + 48;
+			//temp_reading[temp_counter + 1] = (result % 10) + 48;
+			//temp_reading[temp_counter + 2] = '\n';
+			temp_counter += 3;
+			
+			if(temp_counter >= 30){
+				temp_counter = 0;
+				HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&msg[0], 18);
+			}		
+			
+			//UART_Print_String(&huart1, msg, 18);
 			softFlag = 0;						// reset the interrupt flag
 		}
 	}
@@ -177,7 +199,6 @@ static void MX_USART1_UART_Init(void)
 
 }
 
-
 static void MX_ADC1_Init(void)
 {
 	ADC_ChannelConfTypeDef sConfig;
@@ -216,10 +237,29 @@ static void MX_ADC1_Init(void)
 	}
 }
 
+/** 
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void) 
+{
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+	HAL_DMA_Init(&hdma_usart1_tx);
+
+  /* DMA interrupt init */
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+  /* DMA1_Channel5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+}
+
 int UART_Print_String(UART_HandleTypeDef *huart1, char *arr, int size){
 	HAL_UART_Transmit(huart1, (uint8_t *)&arr[0], size, 100);
 	return 0;
 }
+
 static void MX_GPIO_Init(void)
 {
   __HAL_RCC_GPIOB_CLK_ENABLE();
