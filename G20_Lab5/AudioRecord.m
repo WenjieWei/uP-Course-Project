@@ -1,18 +1,28 @@
-% Record your voice for 5 seconds.
-recObj = audiorecorder;
-disp('Start speaking.')
-recordblocking(recObj, 5);
-disp('End of Recording.');
+% % Record your voice for 5 seconds.
+% recObj = audiorecorder;
+% disp('Start speaking.')
+% recordblocking(recObj, 5);
+% disp('End of Recording.');
+% 
+% % Play back the recording.
+% play(recObj);
+% 
+% % Store data in double-precision array.
+% myRecording = getaudiodata(recObj);
+% figure; plot(myRecording); % Plot the original waveform.
+% 
+% % cut the area you want and convert it into integers
+% audioData = uint16((myRecording(4000:8999)+1)*1024/2); 
+% csvwrite('AudioArray.csv',audioData');
+% % Plot the modified waveform.
+% figure;plot(audioData);
 
-% Play back the recording.
-play(recObj);
+instrreset
 
-% Store data in double-precision array.
-myRecording = getaudiodata(recObj);
-figure; plot(myRecording); % Plot the original waveform.
+s = serial('COM3', 'BaudRate', 11520);
+fopen(s);
 
-% cut the area you want and convert it into integers
-MyAudioArray = uint16((myRecording(1:1000)+1)*1024/2); 
-csvwrite('AudioArray.csv',MyAudioArray');
-% Plot the modified waveform.
-figure;plot(MyAudioArray);
+for i = 1:5000
+    fwrite(s, audioData(i), 'uint16');
+end
+fclose(s);
