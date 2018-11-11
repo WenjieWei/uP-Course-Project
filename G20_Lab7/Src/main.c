@@ -52,6 +52,11 @@
 #include "cmsis_os.h"
 
 #include "stm32l475e_iot01_accelero.h"
+#include "stm32l475e_iot01_tsensor.h"
+#include "stm32l475e_iot01_gyro.h"
+#include "stm32l475e_iot01_psensor.h"
+#include "stm32l475e_iot01_magneto.h"
+#include "stm32l475e_iot01_hsensor.h"
 
 /* USER CODE BEGIN Includes */
 
@@ -59,6 +64,31 @@
 
 /* Private variables ---------------------------------------------------------*/
 osThreadId defaultTaskHandle;
+osThreadId taskPushHandle;
+osThreadId taskUartHandle;
+
+
+int buttonCount = 0;
+int sensorID;
+
+//the address varible for every sensor value
+int16_t MAG[3];
+int16_t Acc[3];
+float GYO[3];
+float temp;
+float hum;
+float press;
+
+//lock used for perform lock
+int lock = 0;
+
+int pressed = 1;
+int hold = 0;
+
+//the state of power, 0 means on, 1 means off
+int shutdown = 0;
+
+
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -103,11 +133,41 @@ void UART_init() {
 	
 	HAL_UART_Init(&handle);
 }
+
+/* GPIO init function */
+static void MX_GPIO_Init(void)
+{
+
+  GPIO_InitTypeDef GPIO_InitStruct;
+
+  /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PC13 */
+  GPIO_InitStruct.Pin = GPIO_PIN_13;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB14 */
+  GPIO_InitStruct.Pin = GPIO_PIN_14;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 void StartDefaultTask(void const * argument);
+void StarttaskPush(void const * argument);
+void StarttaskUart(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -126,14 +186,13 @@ void StartDefaultTask(void const * argument);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
+	
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
@@ -150,12 +209,12 @@ int main(void)
 
   /* USER CODE END 2 */
 
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
+  /* USER CODE BEGIN RTOS_lock */
+  /* add lockes, ... */
+  /* USER CODE END RTOS_lock */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
+	
   /* USER CODE END RTOS_SEMAPHORES */
 
   /* USER CODE BEGIN RTOS_TIMERS */
@@ -166,6 +225,16 @@ int main(void)
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+	
+	/* definition and creation of Taskpush */
+	osThreadDef(taskPush, StarttaskPush, osPriorityAboveNormal, 0, 128);
+  taskPushHandle = osThreadCreate(osThread(taskPush), NULL);
+	
+	/* definition and creation of TaskUart */
+	osThreadDef(taskUart, StarttaskUart, osPriorityBelowNormal, 0, 128);
+  taskUartHandle = osThreadCreate(osThread(taskUart), NULL);
+
+
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -180,15 +249,14 @@ int main(void)
   osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
 
   /* USER CODE END WHILE */
-
   /* USER CODE BEGIN 3 */
+	
 
   }
   /* USER CODE END 3 */
@@ -265,15 +333,195 @@ void StartDefaultTask(void const * argument)
 {
 
   /* USER CODE BEGIN 5 */
-	UART_init();
-	BSP_ACCELERO_Init();
-	int16_t XYZ[3];
+
+	BSP_TSENSOR_Init();
+
+
   /* Infinite loop */
   for(;;)
   {
-		osDelay(100);
-		BSP_ACCELERO_AccGetXYZ(XYZ);
-		printf("X = %d, Y = %d, Z = %d\n", XYZ[0], XYZ[1], XYZ[2]);
+		
+		// read the sensor for 5 Hz
+		osDelay(200);
+		
+		// read the sensor determined by the push button, unlock;
+		if( sensorID == 0 ){
+			temp = BSP_TSENSOR_ReadTemp();
+			lock = 1;
+		}
+		else if(sensorID == 1){
+			hum = BSP_HSENSOR_ReadHumidity();
+			lock = 1;
+		}
+		else if(sensorID == 2 ){
+			BSP_MAGNETO_GetXYZ(MAG);
+			lock = 1;
+		}
+		else if(sensorID == 3 ){
+			press = BSP_PSENSOR_ReadPressure();
+			lock = 1;
+		}
+		else if(sensorID == 4 ){
+			BSP_ACCELERO_AccGetXYZ(Acc);
+			lock = 1;
+		}
+		else if(sensorID == 5 ){
+			BSP_GYRO_GetXYZ(GYO);
+			lock = 1;
+		}
+
+  }
+  /* USER CODE END 5 */ 
+}
+
+void StarttaskPush(void const * argument)
+{
+ // 0 = temperature, 1 = humidity, 2 = magnetometer, 3 = pressure, 4 = acceler, 5 = gyrocope
+	
+  /* USER CODE BEGIN 5 */
+	MX_GPIO_Init();
+  /* Infinite loop */
+  for(;;)
+  {
+		osDelay(200);
+		
+		//make sure only process in poweron mode
+		if(shutdown == 0){
+			
+			if (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && pressed == 1){
+				pressed = 0;
+				//change the state for sensor
+				buttonCount++;
+				sensorID = buttonCount % 6;
+				// init or Deinit based on the state
+				if(sensorID == 1){
+					BSP_HSENSOR_Init();
+				}
+				else if(sensorID == 2){
+					BSP_MAGNETO_Init();
+				}
+				else if(sensorID == 3){
+					BSP_PSENSOR_Init();
+					BSP_MAGNETO_DeInit();
+				}
+				else if(sensorID == 4){
+					BSP_ACCELERO_Init();
+				}
+				else if(sensorID == 5){
+					BSP_GYRO_Init();
+					BSP_ACCELERO_DeInit();
+				}
+				else if(sensorID == 0){
+					BSP_TSENSOR_Init();
+					BSP_GYRO_DeInit();
+				}
+			}
+			//if not hold button, reset the value 
+			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)){
+				pressed = 1;
+				hold = 0;
+			}
+			//if the button keeps hold, check for the duration 
+			if(pressed == 0){
+				hold++;
+			}
+			//if hold for 3 second, sleep 
+			if(hold == 12){
+				printf( "Killing all threads\n");
+				
+				//only remain button thread, kill others 
+				osThreadTerminate (taskUartHandle);
+				osThreadTerminate (defaultTaskHandle);
+				
+				//reset the mode value
+				shutdown = 1;
+				pressed = 1;
+				hold = 0;
+			}
+		}
+		
+		if(shutdown == 1){
+			//during the sleep mode, only check the hold button
+			
+			if (!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13) && pressed == 1){
+				pressed = 0;
+			}
+			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)){
+				pressed = 1;
+				hold = 0;
+			}
+		
+			if(pressed == 0){
+				hold++;
+			}
+			
+			
+			if(hold == 15){
+				/* Create the thread(s) */
+				/* definition and creation of defaultTask */
+				osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+				defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+				
+				/* definition and creation of TaskUart */
+				osThreadDef(taskUart, StarttaskUart, osPriorityBelowNormal, 0, 128);
+				taskUartHandle = osThreadCreate(osThread(taskUart), NULL);
+				
+				//reset the mode value
+				pressed = 1;
+				hold = 0;
+				shutdown = 0;
+				printf("Keep going\n");
+				osDelay(1000);
+			}
+		}
+  }
+  /* USER CODE END 5 */ 
+}
+
+void StarttaskUart(void const * argument)
+{
+	
+  /* USER CODE BEGIN 5 */
+	UART_init();
+  /* Infinite loop */
+  for(;;)
+  {
+		osDelay(200);
+		
+		//print the sensor value based on the state, and only print when the value is updated(unlock), then back to lock again.
+		if(lock == 1){
+			if( sensorID == 0){
+				printf("Printing temperature.\n");
+				printf("%fC\n", temp);
+				lock = 0;
+			}
+			else if(sensorID == 1 ){
+				printf("Printing humidity.\n");
+				printf("%f\n", hum);
+				lock = 0;
+			}
+			else if(sensorID == 2 ){
+				printf("Printing magnetometer.\n");
+				printf("X = %d, Y = %d, Z = %d\n", MAG[0], MAG[1], MAG[2]);
+				lock = 0;
+			}
+			else if(sensorID == 3 ){
+				printf("Printing pressure.\n");
+				printf("%f\n", press);
+				lock = 0;
+			}
+			else if(sensorID == 4 ){
+				printf("Printing accelometer.\n");
+				printf("X = %d, Y = %d, Z = %d\n", Acc[0], Acc[1], Acc[2]);
+				lock = 0;
+			}
+			else if(sensorID == 5 ){
+				printf("Printing gyrometer.\n");
+				printf("X = %f, Y = %f, Z = %f\n", GYO[0], GYO[1], GYO[2]);
+				lock = 0;
+			}
+		
+		}
   }
   /* USER CODE END 5 */ 
 }
