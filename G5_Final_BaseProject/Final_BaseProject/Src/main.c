@@ -176,7 +176,10 @@ int main(void)
 	float32_t sineWave[16000*sampleTime];
 	for(i=0;i<16000*sampleTime;i++){
 		rad=2*pi*frequency*i/16000;
-		sineWave[i] = arm_sin_f32(arm_sin_f32	(rad));
+		
+		// Here we should scale the raw data to be 12 bit, so that we need to time it by 4096 (2^12)
+		// In addition, since the range of raw data is (-1, 1), we need to add it by 1
+		sineWave[i] = (arm_sin_f32(rad) + 1) * 4096;
 	}
 	
 	//================================================================================== 
@@ -194,8 +197,10 @@ int main(void)
   {
   /* USER CODE END WHILE */
   /* USER CODE BEGIN 3 */
+		/*
 		HAL_DFSDM_FilterRegularStart(&hdfsdm1_filter0);		
 		HAL_DFSDM_FilterRegularStart(&hdfsdm1_filter1);
+		*/
 		
 		/*
 		if(!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)){
