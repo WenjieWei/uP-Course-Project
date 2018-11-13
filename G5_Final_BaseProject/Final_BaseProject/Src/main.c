@@ -192,6 +192,13 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	
+	//====================================================================================
+	/*
+	As for the Quad-SPI flush memory, please refer to 
+	https://www.st.com/content/ccc/resource/technical/document/application_note/group0/b0/7e/46/a8/5e/c1/48/01/DM00227538/files/DM00227538.pdf/jcr:content/translations/en.DM00227538.pdf
+	starting from p35
+	*/
+	//=======================================================================================
 	
 	while (1)
   {
