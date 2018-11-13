@@ -175,6 +175,20 @@ int main(void)
   {
   /* USER CODE END WHILE */
   /* USER CODE BEGIN 3 */
+    	//============================sine wave generation==========================================
+	float pi=3.14159;
+	int sampleTime=2; //2 sec
+	int frequency=440;
+	
+	int i;
+	int rad;
+	float32_t sineWave[16000*sampleTime];
+	for(i=0;i<16000*sampleTime;i++){
+		rad=2*pi*frequency*i/16000;
+		sineWave[i]=arm_sin_f32	(rad);
+	}
+	
+	//================================================================================== 
   }
   /* USER CODE END 3 */
 }
