@@ -71,6 +71,7 @@ osThreadId defaultTaskHandle;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 int tim3_flag = 0;
+int counter = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -80,6 +81,9 @@ static void MX_USART1_UART_Init(void);
 static void MX_DFSDM1_Init(void);
 static void MX_DAC1_Init(void);
 void StartDefaultTask(void const * argument);
+
+/* GLOBAL VARIABLE FOR THE SOFTWARE FLAG */
+int softFlag = 0;
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -161,21 +165,8 @@ int main(void)
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
- 
-
-  /* Start scheduler */
-  osKernelStart();
-  
-  /* We should never get here as control is now taken by the scheduler */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
 	
-	while (1)
-  {
-  /* USER CODE END WHILE */
-  /* USER CODE BEGIN 3 */
-    	//============================sine wave generation==========================================
+   	//============================sine wave generation==========================================
 	float pi=3.14159;
 	int sampleTime=2; //2 sec
 	int frequency=440;
@@ -185,11 +176,49 @@ int main(void)
 	float32_t sineWave[16000*sampleTime];
 	for(i=0;i<16000*sampleTime;i++){
 		rad=2*pi*frequency*i/16000;
-		sineWave[i]=arm_sin_f32	(rad);
+		sineWave[i] = arm_sin_f32(arm_sin_f32	(rad));
 	}
 	
 	//================================================================================== 
-  }
+
+  /* Start scheduler */
+  osKernelStart();
+  
+  /* We should never get here as control is now taken by the scheduler */
+
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+	
+	
+	while (1)
+  {
+  /* USER CODE END WHILE */
+  /* USER CODE BEGIN 3 */
+		HAL_DFSDM_FilterRegularStart(&hdfsdm1_filter0);		
+		HAL_DFSDM_FilterRegularStart(&hdfsdm1_filter1);
+		
+		/*
+		if(!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)){
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+			*/
+		if(softFlag){
+				
+				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, sineWave[counter]);
+				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, sineWave[counter++]);
+			
+		/*else {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 0);
+				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 0);
+		}
+  }*/
+				softFlag = 0;
+			
+				if (counter == 16000 * sampleTime){
+					counter =0;
+				}
+		}
+	}
   /* USER CODE END 3 */
 }
 
@@ -262,7 +291,7 @@ void SystemClock_Config(void)
 
     /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/16000);
 
     /**Configure the Systick 
     */
