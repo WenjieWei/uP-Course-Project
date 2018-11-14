@@ -7,7 +7,7 @@ gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4x
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l475xx.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Include/core_cm4.h
-gxx_project\stm32l4xx_hal_dac_ex.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+gxx_project\stm32l4xx_hal_dac_ex.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdint.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Include/core_cmInstr.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Include/core_cmFunc.h
@@ -15,7 +15,7 @@ gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Include/core_cmSimd.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/system_stm32l4xx.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-gxx_project\stm32l4xx_hal_dac_ex.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
+gxx_project\stm32l4xx_hal_dac_ex.o: D:\Keil\ARM\ARMCC\Bin\..\include\stdio.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_rcc_ex.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_gpio.h
 gxx_project\stm32l4xx_hal_dac_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_gpio_ex.h

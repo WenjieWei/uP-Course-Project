@@ -38,6 +38,7 @@
 
 /* USER CODE BEGIN 0 */
 extern int tim3_flag;
+extern int softFlag;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -152,7 +153,7 @@ void DebugMon_Handler(void)
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+	softFlag = 1;
   /* USER CODE END SysTick_IRQn 0 */
   osSystickHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */

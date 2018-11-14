@@ -72,6 +72,14 @@ osThreadId defaultTaskHandle;
 /* Private variables ---------------------------------------------------------*/
 int tim3_flag = 0;
 int counter = 0;
+
+float sampleTime = 2; //2 sec
+float soundFreq = 440;
+float sampleFreq = 16000;
+float32_t sineWaveSample, rad;
+
+/* GLOBAL VARIABLE FOR THE SOFTWARE FLAG */
+int softFlag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -82,11 +90,15 @@ static void MX_DFSDM1_Init(void);
 static void MX_DAC1_Init(void);
 void StartDefaultTask(void const * argument);
 
-/* GLOBAL VARIABLE FOR THE SOFTWARE FLAG */
-int softFlag = 0;
+/* User defined functions */
+float32_t sine_wave_gen(int frequency, int counter);
+
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
+
+/* Private global constants  -----------------------------------------------*/
+const float pi=3.14159;
 
 /* USER CODE END PFP */
 
@@ -155,8 +167,8 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  //osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  //defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -166,72 +178,49 @@ int main(void)
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 	
-   	//============================sine wave generation==========================================
-	float pi=3.14159;
-	int sampleTime=2; //2 sec
-	int frequency=440;
-	
-	int i;
-	int rad;
-	float32_t sineWave[16000*sampleTime];
-	for(i=0;i<16000*sampleTime;i++){
-		rad=2*pi*frequency*i/16000;
-		
-		// Here we should scale the raw data to be 12 bit, so that we need to time it by 4096 (2^12)
-		// In addition, since the range of raw data is (-1, 1), we need to add it by 1
-		sineWave[i] = (arm_sin_f32(rad) + 1) * 4096;
-	}
-	
 	//================================================================================== 
 
   /* Start scheduler */
-  osKernelStart();
+  //osKernelStart();
   
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 	
-	//====================================================================================
+	//===================================================================================
 	/*
 	As for the Quad-SPI flush memory, please refer to 
 	https://www.st.com/content/ccc/resource/technical/document/application_note/group0/b0/7e/46/a8/5e/c1/48/01/DM00227538/files/DM00227538.pdf/jcr:content/translations/en.DM00227538.pdf
 	starting from p35
 	*/
-	//=======================================================================================
+	//===================================================================================
 	
 	while (1)
-  {
-  /* USER CODE END WHILE */
-  /* USER CODE BEGIN 3 */
-		/*
-		HAL_DFSDM_FilterRegularStart(&hdfsdm1_filter0);		
-		HAL_DFSDM_FilterRegularStart(&hdfsdm1_filter1);
-		*/
-		
-		/*
-		if(!HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)){
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
-			*/
-		if(softFlag){
-				
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, sineWave[counter]);
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, sineWave[counter++]);
+  {		
+		if(softFlag){				
+			softFlag = 0;
+			sineWaveSample = sine_wave_gen(soundFreq, counter);
 			
-		/*else {
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 0);
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 0);
-		}
-  }*/
-				softFlag = 0;
+			HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sineWaveSample);
+			HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, sineWaveSample);
 			
-				if (counter == 16000 * sampleTime){
-					counter =0;
-				}
+			counter++;
+			
+			if (counter == sampleFreq){
+				counter = 0;
+			}
 		}
 	}
   /* USER CODE END 3 */
+}
+
+float32_t sine_wave_gen(int frequency, int counter){
+	rad = 2 * pi * frequency * counter / sampleFreq;
+	
+	// Here we should scale the raw data to be 8 bit, so that we need to time it by 256 (2^8)
+	// In addition, since the range of raw data is (-1, 1), we need to add it by 1
+	return (arm_sin_f32(rad) + 1) * 128;	
 }
 
 /**
@@ -245,8 +234,9 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInit;
 
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
+  /**
+		Initializes the CPU, AHB and APB busses clocks
+	*/
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
@@ -301,9 +291,9 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time 
-    */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/16000);
+  /**Configure the Systick interrupt time 
+  */
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 16000);
 
     /**Configure the Systick 
     */
@@ -469,8 +459,7 @@ void StartDefaultTask(void const * argument)
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
   for(;;)
-  {
-    osDelay(1);
+  {		
   }
   /* USER CODE END 5 */ 
 }
