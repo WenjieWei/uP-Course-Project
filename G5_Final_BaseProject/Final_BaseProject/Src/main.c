@@ -64,10 +64,6 @@ DFSDM_Filter_HandleTypeDef hdfsdm1_filter1;
 DFSDM_Channel_HandleTypeDef hdfsdm1_channel1;
 DFSDM_Channel_HandleTypeDef hdfsdm1_channel2;
 
-QSPI_HandleTypeDef hqspi;
-
-SPI_HandleTypeDef hspi1;
-
 UART_HandleTypeDef huart1;
 
 osThreadId defaultTaskHandle;
@@ -76,6 +72,7 @@ osThreadId defaultTaskHandle;
 /* Private variables ---------------------------------------------------------*/
 int tim3_flag = 0;
 int counter = 0;
+int i, store;
 
 /**
  This variable selects which sound to play.
@@ -83,19 +80,23 @@ int counter = 0;
  1: mix
  2: C4 to left and G4 to right
  */
-int play_sound = 1;
 
 float testFreq = 261.63;
 const float C4Freq = 261.63;
 const float G4Freq = 392;
 
+const uint32_t addr_sec0 = 0x00000000;
+const uint32_t addr_sec1 = 0x00020000;
+
 float sampleTime = 2; //2 sec
 float sampleFreq = 16000;
+
 float32_t sineWaveSample, rad;
+float32_t G4Sample, C4Sample;
+float32_t mixedSample;
 
 /* Variables to perform sound mixing */
-float32_t a_matrix[4] = {1, 1, 
-										 1, 1};
+float32_t a_matrix[4] = {1, 1, 1, 1};
 float32_t s_matrix[2];
 float32_t x_matrix[2];
 
@@ -109,8 +110,6 @@ static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_DFSDM1_Init(void);
 static void MX_DAC1_Init(void);
-static void MX_QUADSPI_Init(void);
-static void MX_SPI1_Init(void);
 void StartDefaultTask(void const * argument);
 
 /* User defined functions */
@@ -154,6 +153,7 @@ int main(void)
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
+	BSP_QSPI_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -219,39 +219,49 @@ int main(void)
 	*/
 	//===================================================================================
 	
+	/* Write to the QSPI memory */	
+	i = 0;
+	if(BSP_QSPI_Erase_Chip() == QSPI_OK){
+		for(i = 0; i < 32000; i++){
+			C4Sample = sine_wave_gen(C4Freq, i);
+			G4Sample = sine_wave_gen(G4Freq, i);
+			
+			BSP_QSPI_Write((uint8_t *) &C4Sample, addr_sec0 + i * 4, 4);
+			BSP_QSPI_Write((uint8_t *) &G4Sample, addr_sec1 + i * 4, 4);	
+		}
+	}
+	
+	// Read from QSPI memory and play the sound
+	i = 0;
 	while (1)
-  {				
-		if(softFlag){				
+  {
+	
+		if(softFlag){		
 			softFlag = 0;
-			sineWaveSample = sine_wave_gen(testFreq, counter);
-			s_matrix[0] = sine_wave_gen(C4Freq, counter);
-			s_matrix[1] = sine_wave_gen(G4Freq, counter);
+			
+			BSP_QSPI_Read((uint8_t *)&s_matrix[0], addr_sec0 + i * 4, 4);
+			BSP_QSPI_Read((uint8_t *)&s_matrix[1], addr_sec1 + i * 4, 4);
 			
 			mix_sound();
 			
-			if(play_sound == 0){
-				// 440Hz test
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, sineWaveSample);
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, sineWaveSample);
-			} else if (play_sound == 1){
-				// mix
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, x_matrix[0]);
-				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, x_matrix[1]);				
-			}
-			counter++;
+			HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_8B_R, x_matrix[0]);
+			HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_8B_R, s_matrix[1]);
+			i++;
 			
-			if (counter == sampleFreq){
-				counter = 0;
+			
+			if (i >= 32000){
+				i = 0;
+				C4Sample = 0;
+				G4Sample = 0;
 			}
 		}
 	}
   /* USER CODE END 3 */
 }
-
 float32_t sine_wave_gen(int frequency, int counter){
 	rad = 2 * pi * frequency * counter / sampleFreq;
 	
-	// Here we should scale the raw data to be 8 bit, so that we need to time it by 256 (2^8)
+	// Here we should scale the raw data to be 8 bit, so that we need to time it by 128 (2^8)
 	// In addition, since the range of raw data is (-1, 1), we need to add it by 1
 	return (arm_sin_f32(rad) + 1) * 64;	
 }
@@ -341,50 +351,6 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
-/* QUADSPI init function */
-static void MX_QUADSPI_Init(void)
-{
-
-  /* QUADSPI parameter configuration*/
-  hqspi.Instance = QUADSPI;
-  hqspi.Init.ClockPrescaler = 255;
-  hqspi.Init.FifoThreshold = 1;
-  hqspi.Init.SampleShifting = QSPI_SAMPLE_SHIFTING_NONE;
-  hqspi.Init.FlashSize = 1;
-  hqspi.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
-  hqspi.Init.ClockMode = QSPI_CLOCK_MODE_0;
-  if (HAL_QSPI_Init(&hqspi) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
-
-/* SPI1 init function */
-static void MX_SPI1_Init(void)
-{
-
-  /* SPI1 parameter configuration*/
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_4BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
-  hspi1.Init.CRCPolynomial = 7;
-  hspi1.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_ENABLE;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
 /* DAC1 init function */
 static void MX_DAC1_Init(void)
 {
