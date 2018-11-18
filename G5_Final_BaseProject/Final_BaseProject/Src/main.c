@@ -267,6 +267,7 @@ float32_t sine_wave_gen(int frequency, int counter){
 }
 
 void mix_sound(void){
+	// perform the mixing
 	x_matrix[0] = s_matrix[0] * a_matrix[0] + s_matrix[1] * a_matrix[1];
 	x_matrix[1] = s_matrix[0] * a_matrix[2] + s_matrix[1] * a_matrix[3];
 }
